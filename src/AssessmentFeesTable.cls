@@ -141,7 +141,7 @@ Private Sub CsvTemplateInterface_ExtractData(ByRef csvWorkbook As Workbook, Opti
         .Range(.Cells(startRow, rateCol), .Cells(endRow, rateCol)).Copy
         csvWorkbook.Sheets(m_csvSheetName).Range("C2").PasteSpecial xlValues
         
-        If m_hasRefrenceTable Then
+        If m_hasReferenceTable Then
             i = 2
             For Each cell In .Range(keyStone.Offset(1, 0), keyStone.End(xlDown))
                 csvWorkbook.Sheets(m_csvSheetName).Cells(i, 2).Value = dict(cell.Value)

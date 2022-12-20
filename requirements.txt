@@ -1,0 +1,5 @@
+#Packages required by VBA:
+#To enable, hit alt + F11 to open up VBA. Navigate to Tools > References and check the boxes for these (find latest version if necessary).
+
+Microsoft ActiveX Data Objects Library
+Microsoft Scripting Runtime
