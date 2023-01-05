@@ -112,12 +112,8 @@ Private Sub CsvTemplateInterface_ExtractData(ByRef csvWorkbook As Workbook, Opti
     'Current idea is to search the sheet for the keyword or column name for our data. Note that some do not have column names yet.
     Dim keyStone As Variant
     Dim searchKey As String
-    Dim startRow As Integer
-    Dim stateCol As Integer
-    Dim rateCol As Integer
-    Dim stateRange As Range
-    Dim accMonthRange As Range
-    Dim olfValueRange As Range
+    Dim startRow, stateCol, rateCol As Integer
+    Dim stateRange, accMonthRange, olfValueRange As Range
     
     'Olf csv should have AccidentMonth, State, OlfType, Olf, OlfVersion as column headers
     csvWorkbook.Sheets(m_csvSheetName).Range("A1") = "State"
@@ -191,11 +187,7 @@ Private Sub CsvTemplateInterface_ExtractData(ByRef csvWorkbook As Workbook, Opti
             Next st
         Next i
     End With
-    
-        
-
-        
-        
+                            
 End Sub
 
 '============================================================================================================

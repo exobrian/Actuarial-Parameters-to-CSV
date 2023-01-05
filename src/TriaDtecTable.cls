@@ -2,7 +2,7 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "ManualRateTable"
+Attribute VB_Name = "TriaDtecTable"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
@@ -89,9 +89,9 @@ End Property
 Private Sub Class_Initialize()
     
     'These are specific to the class
-    m_paramSheetName = "Rates I"
-    m_dbTableName = "ManualRate"
-    m_csvSheetName = "ManualRate_Table"
+    m_paramSheetName = "GC"
+    m_dbTableName = "TriaDtec"
+    m_csvSheetName = "TriaDtec_Table"
     m_KEYNAME = "CompanyTierKey"
     m_VALUENAME = "CompanyTierValue"
     m_hasReferenceTable = False
@@ -208,4 +208,6 @@ Private Sub CsvTemplateInterface_PrintInfo()
     Debug.Print CsvTemplateInterface_dbConnString
     Debug.Print CsvTemplateInterface_sqlQuery
 End Sub
+
+
 

@@ -18,7 +18,8 @@ Sub main()
     Application.Calculation = xlCalculationManual
     
     'test variable
-    csvTable = "ManualRate"
+    csvTable = "IndustryLerTemperingFactor"
+    
     effDateValue = DateValue(ThisWorkbook.Sheets("Summary").UsedRange.Find(what:="Effective", lookat:=xlWhole, LookIn:=xlValues).Offset(0, 1).Value)
     effDate = CStr(Format(DateValue(effDateValue), "YYYY-MM-DD"))
     expDate = CStr(Format(DateAdd("yyyy", 1, effDateValue), "YYYY-MM-DD"))
@@ -30,6 +31,13 @@ Sub main()
         Set classObject = New OlfTable
     ElseIf csvTable = "ManualRate" Then
         Set classObject = New ManualRateTable
+    ElseIf csvTable = "Ldf" Then
+        Set classObject = New LdfTable
+    ElseIf csvTable = "IndustryLer" Then
+        Set classObject = New IndustryLerTable
+        'note we should call the IndustryLerTemperingFactor too with this since they're both coupled together..
+    ElseIf csvTable = "IndustryLerTemperingFactor" Then
+        Set classObject = New IndustryLerTemperingFactorTable
     Else
         MsgBox "Please enter a valid table as input.", Title:="Error: Input table not allowed"
         Exit Sub
@@ -46,8 +54,7 @@ Sub main()
     Else
         csvInterface.ExtractData csvWorkbook
     End If
-    
-    
+        
     Call saveCsv(csvWorkbook, csvInterface.csvSheetName)
     csvWorkbook.Close False
         
@@ -56,3 +63,4 @@ Sub main()
     Application.DisplayAlerts = True
     Application.Calculation = xlCalculationAutomatic
 End Sub
+

@@ -2,7 +2,7 @@ VERSION 1.0 CLASS
 BEGIN
   MultiUse = -1  'True
 END
-Attribute VB_Name = "AssessmentFeesTable"
+Attribute VB_Name = "LdfTable"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
@@ -89,12 +89,12 @@ End Property
 Private Sub Class_Initialize()
     
     'These are specific to the class
-    m_paramSheetName = "GC"
-    m_dbTableName = "AssessmentFees_Mapping"
-    m_csvSheetName = "AssessmentFees_Table"
-    m_KEYNAME = "AssessmentFeeDescription"
-    m_VALUENAME = "Id"
-    m_hasReferenceTable = True
+    m_paramSheetName = "LDF"
+    m_dbTableName = "Ldf"
+    m_csvSheetName = "Ldf_Table"
+    m_KEYNAME = ""
+    m_VALUENAME = ""
+    m_hasReferenceTable = False
     
     'This query may be more complicated depending on the table pulled
     m_sqlQuery = stringFormat("SELECT * FROM dbo.{0}", m_dbTableName)
@@ -102,49 +102,54 @@ Private Sub Class_Initialize()
     
 End Sub
 
-
-'============================================================================================================
-'Methods for this class
-'============================================================================================================
-
 Private Sub CsvTemplateInterface_ExtractData(ByRef csvWorkbook As Workbook, Optional ByRef dict As Dictionary)
     'This method should extract the data from the pricing parameter file and paste it into our csv file.
     'Eventually we'll need to clean the table and normalize it as well to match the formatting of the SQL table.
     'Current idea is to search the sheet for the keyword or column name for our data. Note that some do not have column names yet.
-    Dim keyStone, cell As Variant
+    Dim keyStone, tableColumnRange, stateKey, ldfTypeKey, ageStartKey, ageRange, ldfValues As Variant
     Dim searchKey As String
-    Dim startRow, endRow, stateCol, rateCol As Integer
-    
-    'Top left column header for range to copy
-    searchKey = "Assessment Fees Description"
-    Set keyStone = ThisWorkbook.Sheets(m_paramSheetName).UsedRange.Find(what:=searchKey, LookIn:=xlValues, lookat:=xlPart)
-    
-    startRow = keyStone.Row + 1
-    endRow = keyStone.End(xlDown).Row
-    stateCol = keyStone.EntireRow.Find(what:="State", LookIn:=xlValues, lookat:=xlPart).Column
-    
-    'Annoyingly, new value column in the pricing params for this table does not have a heading. For now hardcode, but later should put a unique header like NewValue or something
-    rateCol = stateCol + 3
-    
-    'Assessment fee csv table should have State, AssessmentFeeId, Rate
-    csvWorkbook.Sheets(m_csvSheetName).Range("A1") = "State"
-    csvWorkbook.Sheets(m_csvSheetName).Range("B1") = "AssessmentFeeId"
-    csvWorkbook.Sheets(m_csvSheetName).Range("C1") = "Rate"
+    Dim stateStartRow, stateEndRow, ageStartCol, ageEndCol, currentRow, i As Integer
     
     With ThisWorkbook.Sheets(m_paramSheetName)
-        .Range(.Cells(startRow, stateCol), .Cells(endRow, stateCol)).Copy
-        csvWorkbook.Sheets(m_csvSheetName).Range("A2").PasteSpecial xlValues
+        'This should be a unique key to search that contains a known value in the table header. Be careful with this.
+        'Not a fan of all this searching and use of entire row.. but there are blank columns in between headers we can't ignore
+        searchKey = "State"
+        Set keyStone = .UsedRange.Find(what:=searchKey, LookIn:=xlValues, lookat:=xlWhole)
+        Set tableColumnRange = keyStone.EntireRow
+        Set stateKey = tableColumnRange.Find(what:="State", LookIn:=xlValues, lookat:=xlWhole)
+        Set ldfTypeKey = tableColumnRange.Find(what:="Pd or Inc", LookIn:=xlValues, lookat:=xlWhole)
+        Set ageStartKey = tableColumnRange.Find(what:="1", LookIn:=xlValues, lookat:=xlWhole)
         
-        .Range(.Cells(startRow, rateCol), .Cells(endRow, rateCol)).Copy
-        csvWorkbook.Sheets(m_csvSheetName).Range("C2").PasteSpecial xlValues
+        'set start/end for our loop
+        stateStartRow = stateKey.Row + 1
+        stateEndRow = stateKey.End(xlDown).Row
+        ageStartCol = ageStartKey.Column
+        ageEndCol = ageStartKey.End(xlToRight).Column
         
-        If m_hasReferenceTable Then
-            i = 2
-            For Each cell In .Range(keyStone.Offset(1, 0), keyStone.End(xlDown))
-                csvWorkbook.Sheets(m_csvSheetName).Cells(i, 2).Value = dict(cell.Value)
-                i = i + 1
-            Next cell
-        End If
+        'Use this to get the age values
+        Set ageRange = .Range(ageStartKey.Address & ":" & ageStartKey.End(xlToRight).Address)
+                
+        'LDF should have State, PaidOrIncurred, AccidentAge, Value
+        csvWorkbook.Sheets(m_csvSheetName).Range("A1") = "State"
+        csvWorkbook.Sheets(m_csvSheetName).Range("B1") = "PaidOrIncurred"
+        csvWorkbook.Sheets(m_csvSheetName).Range("C1") = "AccidentAge"
+        csvWorkbook.Sheets(m_csvSheetName).Range("D1") = "Value"
+        
+        'Main Loop
+        With csvWorkbook.Sheets(m_csvSheetName)
+            currentRow = 2
+            For i = stateStartRow To stateEndRow
+                'Grab each state's ldf values and set here
+                Set ldfValues = ThisWorkbook.Sheets(m_paramSheetName).Range(ThisWorkbook.Sheets(m_paramSheetName).Cells(i, ageStartCol), ThisWorkbook.Sheets(m_paramSheetName).Cells(i, ageEndCol))
+                
+                .Range(.Cells(currentRow, 1), .Cells(currentRow + ageRange.Count - 1, 1)).Value = ThisWorkbook.Sheets(m_paramSheetName).Cells(i, stateKey.Column).Value
+                .Range(.Cells(currentRow, 2), .Cells(currentRow + ageRange.Count - 1, 2)).Value = ThisWorkbook.Sheets(m_paramSheetName).Cells(i, ldfTypeKey.Column).Value
+                .Range(.Cells(currentRow, 3), .Cells(currentRow + ageRange.Count - 1, 3)).Value = Application.WorksheetFunction.Transpose(ageRange.Value)
+                .Range(.Cells(currentRow, 4), .Cells(currentRow + ageRange.Count - 1, 4)).Value = Application.WorksheetFunction.Transpose(ldfValues.Value)
+                currentRow = currentRow + ageRange.Count
+            Next i
+        End With
+        
     End With
 End Sub
 
