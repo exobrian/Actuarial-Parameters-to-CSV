@@ -4,9 +4,9 @@ Option Explicit
 Global effDate As String
 Global expDate As String
 
-Sub main()
+Sub main(Optional ByVal csvTable As String)
     Dim classObject As Object
-    Dim csvTable As String
+    'Dim csvTable As String
     Dim effDateValue As Date
     Dim csvInterface As CsvTemplateInterface
     Dim csvWorkbook As Workbook
@@ -18,7 +18,7 @@ Sub main()
     Application.Calculation = xlCalculationManual
     
     'test variable
-    csvTable = "IndustryLerTemperingFactor"
+    'csvTable = "IndustryLerTemperingFactor"
     
     effDateValue = DateValue(ThisWorkbook.Sheets("Summary").UsedRange.Find(what:="Effective", lookat:=xlWhole, LookIn:=xlValues).Offset(0, 1).Value)
     effDate = CStr(Format(DateValue(effDateValue), "YYYY-MM-DD"))

@@ -97,7 +97,11 @@ Private Sub Class_Initialize()
     m_hasReferenceTable = True
     
     'This query may be more complicated depending on the table pulled
-    m_sqlQuery = stringFormat("SELECT * FROM dbo.{0}", m_dbTableName)
+    m_sqlQuery = stringFormat("SELECT MAX([Id]) as [Id], [AssessmentFeeDescription]" & _
+        " FROM [dbo].{0}" & _
+        " GROUP BY [AssessmentFeeDescription]" & _
+        " ORDER BY [AssessmentFeeDescription] ASC" _
+        , m_dbTableName)
     m_dbConnString = paramsDbConnectString(m_dbTableName)
     
 End Sub

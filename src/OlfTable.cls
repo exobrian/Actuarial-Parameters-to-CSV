@@ -97,7 +97,11 @@ Private Sub Class_Initialize()
     m_VALUENAME = "type"
     
     'This query may be more complicated depending on the table pulled
-    m_sqlQuery = stringFormat("SELECT * FROM dbo.{0}", m_dbTableName)
+    m_sqlQuery = stringFormat("SELECT [description], MAX([type]) AS [Type]" & _
+            " FROM dbo.{0}" & _
+            " GROUP BY [description]" & _
+            " ORDER BY [description] ASC" _
+            , m_dbTableName)
     m_dbConnString = paramsDbConnectString(m_dbTableName)
     
 End Sub

@@ -1,5 +1,10 @@
 #Packages required by VBA:
-#To enable, hit alt + F11 to open up VBA. Navigate to Tools > References and check the boxes for these (find latest version if necessary).
+#To enable, hit alt + F11 to open up VBA. Navigate to Tools > References and check the boxes for these (find latest version if necessary). Note that the main src code in 20210101 has an injector module to programmatically load these references.
 
-Microsoft ActiveX Data Objects Library
-Microsoft Scripting Runtime
+'Visual basic for Applications
+'Microsoft Excel 16.0 Object Library
+'OLE Automation
+'Microsoft Office 16.0 Object Library
+'Microsoft ActiveX Data Objects 6.1 Library
+'Microsoft Scripting Runtime
+'Microsoft visual Basic for Applications Extensibility 5.3

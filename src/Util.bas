@@ -127,7 +127,7 @@ Sub saveCsv(ByRef csvWorkbook As Workbook, ByVal csvSheetName As String)
 End Sub
 
 Function getCountOfFiles(ByVal savePath As String, ByVal csvSheetName As String) As Integer
-    'counts number of files with csvSheetName pattern
+    'counts number of files with csvSheetName pattern and returns count as int.
     
     Dim fso As New FileSystemObject
     Dim searchString As String
@@ -144,8 +144,8 @@ Function getCountOfFiles(ByVal savePath As String, ByVal csvSheetName As String)
     getCountOfFiles = i
 End Function
 
-Function getNewest(path As String, wildCard As String)
-'Finds the newest version of a file
+Function getNewest(path As String, wildCard As String) As String
+'Finds the newest version of a file. Returns string of name of file including extension.
 'Note: path does not have slash at end.
 
 Dim FileName As String
@@ -160,6 +160,8 @@ fileSpec = "*" & wildCard & "*"
 'specify the directory
 If Right(path, 1) <> "\" Then
     directory = path & "\"
+Else
+    directory = path
 End If
 
 FileName = Dir(directory & fileSpec)
